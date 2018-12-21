@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.Vegle.Dao.LoginDao">
+    <resultMap id="user" type="com.Vegle.Bean.User">
+        <id column="uid" property="id"/>
+        <result column="usn" property="username"/>
+        <result column="pwd" property="password"/>
+        <association property="role" javaType="com.Vegle.Bean.Role">
+            <result column="rrid" property="role_id"/>
+            <result column="roletype" property="role_type"/>
+        </association>
+        <association property="status" javaType="com.Vegle.Bean.Status">
+            <result column="sid" property="statusId"></result>
+            <result column="statusName" property="statusName"/>
+        </association>
+    </resultMap>
+    <select id="checkUser" resultMap="user">
+      select u.id uid,u.username usn,u.password pwd,r.role_id rrid,s.statusId sid,s.statusName statusName,r.role_type roletype
+      from user u
+      join role r
+      on
+      u.role_id=r.role_id
+      join status s
+      on u.statusId = s.statusId
+      where u.username = #{param1} and u.password = #{param2}
+    </select>
+
+</mapper>

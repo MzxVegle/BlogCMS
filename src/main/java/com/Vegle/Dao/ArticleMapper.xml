@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.Vegle.Dao.ArticleDao">
+    <!--文章类型的映射关系-->
+    <resultMap id="articleType" type="com.Vegle.Bean.ArticleType">
+        <result property="articleTypeId" column="articleTypeId"/>
+        <result property="typeName" column="typeName"/>
+        <collection property="articleTypes" ofType="articleType" column="articleTypeId" select="getArticleChildType"/>
+    </resultMap>
+
+    <select id="getArticleType" resultMap="articleType">
+        select articleTypeId,typeName from articletype where fatherId is null
+    </select>
+
+    <select id="getArticleChildType" resultMap="articleType">
+        select articleTypeId,typeName from articletype where fatherId  = #{articleId}
+    </select>
+
+    <insert id="insertArticleType">
+        insert into articletype
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            typeName,
+            <if test="fatherId !='' and fatherId != null">fatherId</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{typeName},
+            <if test="fatherId != 0">#{fatherId}</if>
+        </trim>
+    </insert>
+    <select id="getArticleTypeIdByName" resultType="java.lang.Integer">
+        select articleTypeId from articletype where typeName  = #{name}
+    </select>
+    <select id="getArticleTypeById" resultType="java.lang.String">
+        select articleTypeId from articletype where typeName  = #{param1}
+    </select>
+
+    <delete id="deleteType">
+        delete from articletype where typeName = #{name}
+    </delete>
+
+
+    <!--文章的映射关系-->
+    <resultMap id="article" type="com.Vegle.Bean.Article">
+        <result property="articleId" column="articleId"></result>
+        <result property="title" column="title"></result>
+        <result property="txt" column="txt"/>
+        <result property="addTime" column="addTime"/>
+        <result property="updateTime" column="updateTime"/>
+        <association property="commentCount" column="articleId" select="commentAcount"/>
+        <association property="articleType" javaType="com.Vegle.Bean.ArticleType">
+            <result column="tid" property="articleTypeId"></result>
+            <result column="tname" property="typeName"/>
+        </association>
+    </resultMap>
+    <select id="commentAcount" resultType="java.lang.Integer">
+        select count(*) from comment where aid = #{articleId} and pid is null
+    </select>
+
+    <select id="getArticles" resultMap="article">
+        select
+        articleId,title,txt,a.articleTypeId aid,
+        t.articleTypeId tid,t.TypeName tname,a.addTime addTime,
+        a.updateTime updateTime
+        from article a
+        join articletype t
+        on a.articleTypeId = t.articleTypeId
+        <if test="title !=null and title!=''">
+            <where>
+                title like #{title}"%"
+            </where>
+        </if>
+        <if test="type!=null and type!=''">
+            <where>
+                t.TypeName = #{type}
+            </where>
+        </if>
+        <if test="col !=null and col !=''">
+            order by ${col}
+            <if test="sort == 'desc'">
+                desc
+            </if>
+            <if test="sort == 'asc'">
+                asc
+            </if>
+        </if>
+    </select>
+    <insert id="insertArticle">
+        insert into article(title,txt,articleTypeId,addTime,updateTime) values (#{title},#{txt},#{typeId},#{addTime},#{updateTime})
+    </insert>
+    <update id="updateArticle">
+        update article
+        <set>
+            title=#{title},
+            txt = #{txt},
+            articleTypeId = #{typeId},
+            updateTime = #{time}
+        </set>
+        where articleId = #{id}
+    </update>
+
+    <resultMap id="comment" type="com.Vegle.Bean.Comments">
+        <id column="id" property="id"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="createTime"/>
+        <association property="commentUser" column="uid" select="getUserNameById"/>
+        <association property="replyUser" column="rid" select="getUserNameById"/>
+        <collection property="comments" column="id" select="getChildComments" ofType="comment"/>
+    </resultMap>
+    <select id="getComments" resultMap="comment">
+        select id,uid,pid,aid,content,createTime,rid from comment
+        where aid = #{articleId} and pid is null
+    </select>
+    <select id="getChildComments" resultMap="comment">
+        select id,uid,pid,rid,aid,content,createTime from comment
+        where  pid = #{id}
+    </select>
+    <resultMap id="userName" type="com.Vegle.Bean.User">
+        <result column="id" property="id"></result>
+        <result column="username" property="username"></result>
+    </resultMap>
+    <select id="getUserNameById" resultMap="userName">
+        select id,username from user where id=#{id}
+    </select>
+    <delete id="deleteCommentById">
+        delete from comment where id = #{id}
+    </delete>
+</mapper>

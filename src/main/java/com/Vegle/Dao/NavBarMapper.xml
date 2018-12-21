@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.Vegle.Dao.NavBarDao">
+    <resultMap id="cmsNavBarTag" type="com.Vegle.Bean.CmsNavBar">
+        <id property="id" column="id"/>
+        <result property="nodeName" column="nodeName"/>
+        <result property="url" column="url"/>
+        <collection property="cmsNavBarList" ofType="cmsNavBarTag" select="getCmsNavBarChildTag" column="id"/>
+    </resultMap>
+    <select id="getCmsNavBarTag" resultMap="cmsNavBarTag">
+    select id,nodeName,url,fatherId from cms_nav where fatherId is null
+    </select>
+    <select id="getCmsNavBarChildTag" resultMap="cmsNavBarTag">
+        select id,nodeName,url,fatherId from cms_nav where fatherId=#{id}
+    </select>
+
+
+    <resultMap id="BreadcrumbNavBar" type="com.Vegle.Bean.CmsNavBar">
+        <id property="id" column="id"/>
+        <result property="nodeName" column="nodeName"/>
+        <result property="url" column="url"/>
+        <result property="fatherId" column="fatherId"/>
+    </resultMap>
+    <select id="getTagById" resultMap="BreadcrumbNavBar">
+        select id,nodeName,url,fatherId from cms_nav where id = #{id}
+    </select>
+    <select id="getTagByName" resultMap="BreadcrumbNavBar">
+        select id,nodeName,url,fatherId from cms_nav where nodeName = #{name}
+    </select>
+</mapper>

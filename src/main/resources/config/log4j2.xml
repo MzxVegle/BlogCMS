@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration>
+
+
+    <Appenders>
+        <!-- 控制台打印日志 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-5p (%F:%L) - %m%n" />
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <!-- 3rdparty Loggers -->
+        <logger name="org.springframework.core" level="erro">
+        </logger>
+        <logger name="org.springframework.beans" level="erro">
+        </logger>
+        <logger name="org.springframework.context" level="erro">
+        </logger>
+        <logger name="org.springframework.web" level="erro">
+        </logger>
+
+        <!-- 下面的logger需要修改为你的项目根路径，如com.sd -->
+        <logger name="com.Vegle" level="debug" includeLocation="true" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+        <root level="warn" includeLocation="true">
+            <appender-ref ref="Console"/>
+        </root>
+    </Loggers>
+</Configuration>

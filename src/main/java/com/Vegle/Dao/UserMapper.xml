@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.Vegle.Dao.UserDao">
+
+    <resultMap id="getAllUsersMap" type="userBean">
+        <id property="id" column="uid"/>
+        <result column="usn" property="username"/>
+        <result column="pwd" property="password"/>
+        <result column="gender" property="gender"/>
+        <result column="regtime" property="regtime"/>
+        <association property="role" javaType="com.Vegle.Bean.Role">
+            <result column="rid" property="role_id"/>
+            <result column="type" property="role_type"/>
+        </association>
+        <association property="status" javaType="com.Vegle.Bean.Status">
+            <result column="sid" property="statusId"></result>
+            <result column="statusName" property="statusName"></result>
+        </association>
+    </resultMap>
+    <!--获取所有用户SQL-->
+    <select id="getUsers" resultMap="getAllUsersMap">
+        select u.id uid,u.username usn,u.password pwd,u.gender gender,s.statusId sid,s.statusName statusName,r.role_id rid,r.role_type type,u.regtime regtime
+        from user u
+        join role r
+        on r.role_id = u.role_id
+        join `status` s
+        on u.statusId = s.statusId
+        <!--如果传入的name不为空，那么就根据name进行模糊查找-->
+        <if test="name != null and name !=''">
+            <where>
+                u.username like "%"#{name}"%"
+            </where>
+        </if>
+        <if test="field != null and field != ''">
+            order by ${field}
+            <if test="sort =='desc'">
+                desc
+            </if>
+            <if test="sort == 'asc'">
+                asc
+            </if>
+        </if>
+    </select>
+    <!--检查用户名是否存在-->
+    <select id="hasUser" resultType="java.lang.Boolean">
+         <![CDATA[ select count(username) from user where username=#{username} ]]>
+    </select>
+    <!--获取用户权限ID-->
+    <select id="getUserRoleId" resultType="int">
+        select role_id from role where role_type = #{roleType}
+    </select>
+
+    <!--获取用户状态ID-->
+    <select id="getUserStatusId" resultType="int">
+        select statusId from status where statusName = #{statusName}
+    </select>
+
+    <!--更新用户的SQL-->
+    <update id="updateUser" parameterType="userBean">
+        update user
+        <set>
+            password = #{password},
+            gender = #{gender},
+            role_id = #{role.role_id},
+            statusId = #{status.statusId}
+        </set>
+        where username = #{username}
+    </update>
+
+    <!--注册用户的SQL-->
+    <insert id="insertUser" parameterType="userBean">
+        insert into user(username,password,gender,role_id,statusId,regtime) values (#{username},#{password},#{gender},#{role.role_id},#{status.statusId},#{regtime})
+    </insert>
+
+    <!--删除用户的SQL-->
+    <delete id="deleteUser">
+        delete from user where username = #{name}
+    </delete>
+</mapper>
