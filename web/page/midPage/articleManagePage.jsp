@@ -168,7 +168,6 @@
                                 return;
                             }
                             if($("#titleUpdateText").val() != "" && $("select:last").find("option:selected").index() != 0 ){
-
                                 var updateArticle = {
                                     id:currentArticle.articleId,
                                     title:$("#titleUpdateText").val(),
@@ -186,9 +185,6 @@
                                     }
                                 })
                             }
-
-
-
                         }
                     }
                 })
@@ -214,7 +210,6 @@
     }
     function createReplyBoard(comments,obj) {
         for(var i in comments){
-
             obj.append("<ul class='list-group  mb-3 nav' >" +
                 "<li class='list-group-item list-group-item-primary' style='margin-top: 10px'>" +
                 "<label style='margin: 0;padding: 0' >" +
@@ -227,12 +222,12 @@
                 "<i style='float: right;font-size: 13px;color: rgba(113,113,113,0.62);' >评论日期:"+dateTransform(comments[i].createTime.time)+"</i>" +
                 "<label>评论内容：</label>" +
                 "<i style='padding-left: 4px;display: block;margin-left: 45px' >"+comments[i].content+"</i>" +
-                "<a href= '#"+comments[i].id+"' tag='collapse'  data-toggle='collapse' style='font-size: 13px'></a>" +
-                "<div class='collapse' id='"+comments[i].id+"'></div>" +
                 "<div style='font-size: 12px;float: right'>" +
-                "<a href='#' style='margin-right: 5px' tag='reply' replyId="+(comments[i].replyUser == null?0:comments[i].replyUser.id)+" commentid="+comments[i].id+" onclick='reply(this)'>回复</a>" +
+                "<a href='#editor' style='margin-right: 5px' tag='reply' replyId="+(comments[i].replyUser == null?0:comments[i].replyUser.id)+" commentid="+comments[i].id+" onclick='reply(this)'>回复</a>" +
                 "<a href='#' tag='deleteReply' onclick='deleteReply(this)' commentid = "+comments[i].id+">删除</a>" +
                 "</div>" +
+                "<a href= '#"+comments[i].id+"' tag='collapse'  data-toggle='collapse' style='font-size: 13px'></a>" +
+                "<div class='collapse show' id='"+comments[i].id+"'></div>" +
                 "</li>" +
                 "</ul>");
             if(comments[i].comments.length != 0){
@@ -241,13 +236,37 @@
                     "<span class='fa fa-angle-double-right' style='margin-left: 5px'></span>");
                 $(".list-group-item:last").children(".collapse").css({
                     "margin-left":"30px"
-                })
-                createReplyBoard(comments[i].comments,$(".list-group-item:last").children(".collapse"))
+                });
+                createReplyBoard(comments[i].comments,$(".list-group-item:last").children(".collapse"));
             }
         }
     }
     function reply(replyButton) {
-        var collapse = $(replyButton).parent().parent().children(".collapse")
+        var collapse = $(replyButton).parent().parent().children(".collapse");
+        if($("#editor").length !=0){
+            alert("还有一个评论未提交，请提交之后再回复");
+            return;
+        }
+
+        collapse.prepend("<div id='editor'>" +
+            "<div id='editorBar' ></div>" +
+            "<div id='textArea' style='border: 1px solid #c2c5c8;height: 100px;'></div>" +
+            "<a href='#' class='btn btn-primary'>提交</a>" +
+            "</div>");
+        var E = window.wangEditor;
+        var editor = new E("#editorBar","#textArea");
+        editor.customConfig.menus = [
+            'emoticon'
+        ]
+        editor.customConfig.onblur = function () {
+            if(editor.txt.text() == ""){
+                $("#editor").remove();
+            }
+        }
+        editor.create();
+        var t = setTimeout(function () {
+            $("#textArea").children().focus();
+        },10)
 
     }
     function deleteReply(deleteButton) {

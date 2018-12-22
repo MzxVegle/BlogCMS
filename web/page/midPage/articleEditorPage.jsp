@@ -78,7 +78,7 @@
             <label class="input-group-text">标题<i style="color: red">*</i></label>
             <input class="form-control" id="title" type="text" placeholder="输入文章标题(必填)">
         </div>
-        <div class="input-group-prepend mb-4 " id="type">
+        <div class="input-group-prepend " id="type">
             <label class="input-group-text" >类别<i style="color: red">*</i></label>
             <select class="custom-select" id="types">
                 <option>---请选择一项</option>
@@ -86,7 +86,6 @@
         </div>
     </div>
     <div id="editor" class="offset-1" >
-        <div class="dropdown-divider"></div>
         <div id="editorBar" class="offset-4" ></div>
         <%--<div class="dropdown-divider"></div>--%>
         <div id="editorTextarea" class="offset-4 " style="height: 300px;border: 1px solid #c2c5c8"></div>

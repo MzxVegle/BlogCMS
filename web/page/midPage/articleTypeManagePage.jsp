@@ -47,7 +47,7 @@
                 "<li class='list-group-item' style='margin-top: 10px'>" +
                 "<a href= '#"+data[i].articleTypeId+"' class='nav-link' data-toggle='collapse'  style='display: inline'>"+data[i].typeName+"</a>" +
                 "<a href='#' onclick='deleteTypes(this)' class='mb-2 fa fa-times text-danger pull-right' ></a>" +
-                "<a href='#' onclick='generateNewTypeTag(this)' class='mb-2 fa fa-plus pull-right text-secondary' ></a>" +
+                "<a href='#newLabel' onclick='generateNewTypeTag(this)' class='mb-2 fa fa-plus pull-right text-secondary' ></a>" +
                 "<div class='collapse' id='"+data[i].articleTypeId+"'></div>" +
                 "</li>" +
                 "</ul>");
@@ -91,14 +91,18 @@
      * collapse为新增分类listGroup的位置
      */
     function addNewType(collapse) {
+        if($("#newLabel").length != 0){
+            alert("您有一个尚未保存的分类，请提交后在创建分类");
+            return;
+        }
         if(confirm("添加一个分类？")){
             collapse.append("<ul class='list-group mb-3 nav' >" +
                 "<li class='list-group-item' style='margin-top: 10px'>" +
                 "<a href= '#' class='nav-link' data-toggle='collapse' style='display: inline'></a>" +
                 "<a href='#' onclick='deleteTypes(this)' class='mb-2 fa fa-times text-danger pull-right' ></a>" +
-                "<a href='#' onclick='generateNewTypeTag(this)' class='mb-2 fa fa-plus pull-right' ></a>" +
+                "<a href='#newLabel' onclick='generateNewTypeTag(this)' class='mb-2 fa fa-plus pull-right' ></a>" +
                 "<div class='form-group'>" +
-                "<input type='text' class='form-control' >" +
+                "<input type='text' class='form-control' id='newLabel'>" +
                 "<a href='#' style='margin: 10px' onclick='setTagText(this)'  class='btn btn-success fa fa-check'></a>" +
                 "<a href='#' style='margin: 10px'  onclick='delTag(this)' class='btn btn-danger fa fa-times'></a>" +
                 "</div>" +
@@ -106,7 +110,12 @@
                 "<div class='collapse' id=''></div>" +
                 "</li>" +
                 "</ul>");
-            $("input").focus()
+            $("#newLabel").blur(function () {
+                if($(this).val() == ""){
+                    $(this).parent().parent().parent().remove();
+                }
+            })
+
         }
 
     }
@@ -114,6 +123,15 @@
         var collapse = $(button).next();
         addNewType(collapse);
         collapse.addClass("show")
+        var t = setTimeout(function () {
+            $("#newLabel").focus()
+            if($("#newLabel").hasFocus() == true){
+                clearTimeout(t);
+                t = null;
+            }
+
+        },10)
+
     }
 
     /**
@@ -148,8 +166,7 @@
                 param = {typeName:titleTextBox.val()};
             }
             insertType(param,$(button).parent());
-            console.log(param)
-            typeTitle.html("<span class='fa fa-minus' style='margin-right: 15px'></span>"+titleTextBox.val());
+            //typeTitle.html("<span class='fa fa-minus' style='margin-right: 15px'></span>"+titleTextBox.val());
         }
 
     }
@@ -162,7 +179,6 @@
      * div所存在的form标签
      */
     function insertType(param,form) {
-        console.log()
         $.post("/insertArticleType",param,function (result) {
             if(Boolean(result) == true){
                 form.remove();
@@ -193,7 +209,7 @@
 </style>
 <body>
 
-        <a href="#" class="fa fa-plus fa-3x nav-link pull-right" id="addMain" style="" onclick="generateNewTypeTag(this)"></a>
+        <a href="#newLabel" class="fa fa-plus fa-3x nav-link pull-right" id="addMain" style="" onclick="generateNewTypeTag(this)"></a>
 
     <div id="typesItem" style="margin-top: 65px;background-color: white;width: auto;height: auto;display: none">
 
