@@ -9,8 +9,6 @@
 <html>
 <head>
     <script src="/js/pagination.js"></script>
-    <script src="/js/jquery.base64.js"></script>
-    <script src="/js/CodeTranslation.js"></script>
     <script src="/js/typeChange.js"></script>
     <script src="/js/popovertips.js"></script>
     <script src="/js/wangEditor.min.js"></script>
@@ -38,11 +36,24 @@
                     "<td>" +
                     "<button class='btn btn-success' tag='seeArticle' index="+i+" style='margin-right: 5px'>查看</button>" +
                     "<button class='btn btn-primary' tag='updateArticle' index="+i+" style='margin-right: 5px'>修改</button>" +
-                    "<button class='btn btn-danger' tag='deleteArtcile' index="+i+">删除</button>" +
+                    "<button class='btn btn-danger' tag='deleteArtcile'  articleId="+result[i].articleId+">删除</button>" +
                     "</td>" +
                     "</tr>")
 
             }
+            $("[tag='deleteArtcile']").on("click",function () {
+                if(confirm("是否删除此文章？该文章下的所有评论都将会被删除(请谨慎操作)")){
+                    var aid = $(this).attr("articleId");
+                    $.post("/deleteArticle","aid="+aid,function (result) {
+                        if (Boolean(result)){
+                            alert("删除成功")
+                            getArticle(pageNo,title,type,col,sort)
+                        } else{
+                            alert("删除失败")
+                        }
+                    })
+                }
+            });
             $("#articleTable").slideDown();
             //  通过标题查找点击事件
             $("#byTitle").on("click",function () {
@@ -55,30 +66,29 @@
             //通过文章Id查找留言的点击事件
             $("[tag='seeReply']").on("click",function () {
                 var articleId=result[$(this).attr("index")].articleId
-                $.post("/getCommentsById","articleId="+articleId,function (comments) {
-                    $("body").before("<div id='dialog'  title='查看评论' ></div>")
-                    $("#dialog").dialog({
-                        height:400,
-                        width:700,
-                        position:{my:'center top',at:'center top',of:window},
-                        show: {
-                            effect: "blind",
-                            duration: 1000
-                        },
-                        hide: {
-                            effect: "blind",
-                            duration: 1000
-                        },
-                        modal:true,
-                        open:function(){
-                            createReplyBoard(comments,$(this))
-                        },
-                        close:function () {
-                            $(this).remove();
-                        }
-                    })
-                },'json')
-            })
+                $("body").before("<div id='dialog'  title='查看评论' ></div>")
+                $("#dialog").dialog({
+                    height:400,
+                    width:700,
+                    position:{my:'center top',at:'center top',of:window},
+                    show: {
+                        effect: "blind",
+                        duration: 1000
+                    },
+                    hide: {
+                        effect: "blind",
+                        duration: 1000
+                    },
+                    modal:true,
+                    open:function(){
+                        getComment(articleId)
+                    },
+                    close:function () {
+                        $(this).remove();
+                    }
+                })
+            });
+
             //  查看文章按钮的点击事件
             $("[tag='seeArticle']").on("click",function () {
                 var viewBox = new Msgbox();
@@ -126,6 +136,7 @@
                             "<div id='textArea' style='height: 300px;border: 1px solid #e9ecef'></div>"
                         $("#updatePanel").html(html);
                         var editor = createEditor("#editorBar","#textArea");
+                        console.log(base64ToUtf8(currentArticle.txt))
                         editor.txt.html(base64ToUtf8(currentArticle.txt));
                         e = editor;
                         $("#titleBtn").on("click",function () {
@@ -167,6 +178,7 @@
                                 popovertips($("select:last").parent(),"请选择一项作为分类","manual","right");
                                 return;
                             }
+
                             if($("#titleUpdateText").val() != "" && $("select:last").find("option:selected").index() != 0 ){
                                 var updateArticle = {
                                     id:currentArticle.articleId,
@@ -175,6 +187,7 @@
                                     txt:uft8ToBase64(e.txt.html()),
                                     updateTime:dateTransform(new Date().getTime())
                                 };
+
 
                                 $.post("/updateArticle","article="+JSON.stringify(updateArticle),function (result) {
                                     if(Boolean(result)){
@@ -208,7 +221,14 @@
             });
         },'json');
     }
-    function createReplyBoard(comments,obj) {
+
+    function getComment(articleId) {
+        $.post("/getCommentsById","articleId="+articleId,function (comments) {
+            createReplyBoard(comments, $("#dialog"), articleId)
+        },'json')
+    }
+    function createReplyBoard(comments,obj,articleId) {
+        obj.html("");
         for(var i in comments){
             obj.append("<ul class='list-group  mb-3 nav' >" +
                 "<li class='list-group-item list-group-item-primary' style='margin-top: 10px'>" +
@@ -221,10 +241,14 @@
                 "<div class='dropdown-divider'></div>" +
                 "<i style='float: right;font-size: 13px;color: rgba(113,113,113,0.62);' >评论日期:"+dateTransform(comments[i].createTime.time)+"</i>" +
                 "<label>评论内容：</label>" +
-                "<i style='padding-left: 4px;display: block;margin-left: 45px' >"+comments[i].content+"</i>" +
+                "<i style='padding-left: 4px;display: block;margin-left: 45px;word-wrap: break-word;word-break: break-all;overflow: hidden' >"
+                +base64ToUtf8(comments[i].content)+
+                "</i>" +
                 "<div style='font-size: 12px;float: right'>" +
-                "<a href='#editor' style='margin-right: 5px' tag='reply' replyId="+(comments[i].replyUser == null?0:comments[i].replyUser.id)+" commentid="+comments[i].id+" onclick='reply(this)'>回复</a>" +
-                "<a href='#' tag='deleteReply' onclick='deleteReply(this)' commentid = "+comments[i].id+">删除</a>" +
+                "<a href='#editor' onclick='reply(this)' style='margin-right: 5px' tag='reply' articleId="+articleId+" replyId="+(comments[i].replyUser == null?0:comments[i].replyUser.id)+" commentid="+comments[i].id+">" +
+                "回复" +
+                "</a>" +
+                "<a href='#' tag='deleteReply' onclick='deleteReply(this)' articleId="+articleId+" commentid = "+comments[i].id+">删除</a>" +
                 "</div>" +
                 "<a href= '#"+comments[i].id+"' tag='collapse'  data-toggle='collapse' style='font-size: 13px'></a>" +
                 "<div class='collapse show' id='"+comments[i].id+"'></div>" +
@@ -237,7 +261,7 @@
                 $(".list-group-item:last").children(".collapse").css({
                     "margin-left":"30px"
                 });
-                createReplyBoard(comments[i].comments,$(".list-group-item:last").children(".collapse"));
+                createReplyBoard(comments[i].comments,$(".list-group-item:last").children(".collapse"),articleId);
             }
         }
     }
@@ -247,11 +271,14 @@
             alert("还有一个评论未提交，请提交之后再回复");
             return;
         }
+        if(!collapse.hasClass("show")){
+            collapse.addClass("show")
+        }
 
         collapse.prepend("<div id='editor'>" +
             "<div id='editorBar' ></div>" +
-            "<div id='textArea' style='border: 1px solid #c2c5c8;height: 100px;'></div>" +
-            "<a href='#' class='btn btn-primary'>提交</a>" +
+            "<div id='textArea' class='mb-2' style='border: 1px solid #c2c5c8;height: 100px;'></div>" +
+            "<a href='#' class='btn btn-primary' id='commitReply'>提交</a>" +
             "</div>");
         var E = window.wangEditor;
         var editor = new E("#editorBar","#textArea");
@@ -264,9 +291,30 @@
             }
         }
         editor.create();
+        editor.txt.html("")
         var t = setTimeout(function () {
             $("#textArea").children().focus();
         },10)
+        $("#commitReply").on("click",function () {
+            if(editor.txt.text() != ""){
+                var currentUserId = ${sessionScope.user.id}
+                var rid = parseInt($(replyButton).attr("replyId"))
+                var commentId = parseInt($(replyButton).attr("commentId"))
+                var articleId = parseInt($(replyButton).attr("articleId"))
+                var createTime = dateTransform(new Date().getTime())
+
+                var content = uft8ToBase64(editor.txt.html())
+                var commentJson = {userId:currentUserId,replyId:rid,commentId:commentId,articleId:articleId,content:content,createTime:createTime}
+                $.post("/insertComment","commentJson="+JSON.stringify(commentJson),function (result) {
+                    if(Boolean(result)){
+                        alert("回复成功");
+                        getComment(articleId)
+                    }else{
+                        alert("回复失败");
+                    }
+                })
+            }
+        })
 
     }
     function deleteReply(deleteButton) {
@@ -282,6 +330,7 @@
                 "确定":function () {
                     $.post("/deleteCommentById","commentId="+commentId,function (result) {
                         if(Boolean(result)== true){
+                            getComment($(deleteButton).attr("articleId"))
                             alert("删除成功！");
                             $("#messageBox").dialog("close")
                         }else{

@@ -28,6 +28,8 @@
     <script src="../js/jquery-ui.min.js"></script>
     <script src="../js/Msgbox.js"></script>
     <script src="../js/dateTransForm.js"></script>
+    <script src="/js/jquery.base64.js"></script>
+    <script src="/js/CodeTranslation.js"></script>
 
     <script src="/js/CodeRegex.js"></script>
 </head>

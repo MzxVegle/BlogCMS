@@ -24,5 +24,6 @@
     <mvc:resources location="/css/" mapping="/css/**"></mvc:resources>
     <mvc:resources location="/fonts/" mapping="/fonts/**"></mvc:resources>
     <mvc:resources location="/pic/" mapping="/pic/**"></mvc:resources>
+    <mvc:resources location="/uploadFiles/img/" mapping="/uploadFiles/img/**"></mvc:resources>
     <aop:aspectj-autoproxy proxy-target-class="true"/>
 </beans>

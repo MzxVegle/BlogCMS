@@ -10,8 +10,6 @@
 <head>
     <script src="/js/wangEditor.min.js"></script>
     <script src="/js/popovertips.js"></script>
-    <script src="/js/jquery.base64.js"></script>
-    <script src="/js/CodeTranslation.js"></script>
     <script src="/js/typeChange.js"></script>
     <script src="/js/createEditor.js"></script>
 </head>

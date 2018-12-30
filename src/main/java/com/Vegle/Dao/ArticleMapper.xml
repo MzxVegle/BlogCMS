@@ -101,6 +101,9 @@
         </set>
         where articleId = #{id}
     </update>
+    <delete id="deleteArticle">
+        delete from article where articleId = #{aid}
+    </delete>
 
     <resultMap id="comment" type="com.Vegle.Bean.Comments">
         <id column="id" property="id"/>
@@ -128,4 +131,7 @@
     <delete id="deleteCommentById">
         delete from comment where id = #{id}
     </delete>
+    <insert id="insertComment">
+        insert into comment(uid,rid,pid,aid,content,createTime) values (#{uid},#{rid},#{pid},#{aid},#{content},#{createTime})
+    </insert>
 </mapper>

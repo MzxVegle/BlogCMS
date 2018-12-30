@@ -41,6 +41,10 @@ public class ArticleController {
     public void insertArticleType(String typeName,String fatherName){
         ajax.printf(articleService.insertArticleType(typeName,fatherName));
     }
+    @RequestMapping("/deleteArticle")
+    public void deleteArticle(int aid){
+        ajax.printf(articleService.deleteArticle(aid));
+    }
     @RequestMapping("/getArticles")
     public void getArticles(int pageNo,String title,String type,String col,String sort){
         System.out.println("pageNo:"+pageNo+",name:"+title+",type:"+type+",col:"+col+",sort:"+sort);
@@ -58,5 +62,10 @@ public class ArticleController {
     @RequestMapping("/deleteCommentById")
     public void deleteCommentById(int commentId){
         ajax.printf(articleService.deleteCommentById(commentId));
+    }
+    @RequestMapping("/insertComment")
+    public void insertComment(String commentJson){
+        System.out.println(commentJson);
+        ajax.printf(articleService.insertComment(JSONObject.fromObject(commentJson)));
     }
 }

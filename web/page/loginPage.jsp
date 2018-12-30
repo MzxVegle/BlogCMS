@@ -108,7 +108,7 @@
   <body >
   <div class="container-fluid" id="main" >
 
-          <div class="col-4 offset-4 card" style="position:absolute;top:30%;background-color: rgba(255,255,255,0.30);box-shadow: #272727 10px 10px 30px ">
+          <div class="col-4 offset-4 card" style="position:absolute;top:25%;background-color: rgba(255,255,255,0.30);box-shadow: #272727 10px 10px 30px ">
               <h3  class="mb-5" style="margin-top: 25px;text-align: center;color: white;letter-spacing: 5px">博客管理系统登陆</h3>
               <form   id="loginForm" class="col-8 offset-2">
                 <div class="input-group mb-5" id="username-group">

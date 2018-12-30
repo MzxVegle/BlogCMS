@@ -52,7 +52,11 @@ public class ArticleServiceImpl implements ArticleService {
         return articleDao.updateArticle(id,title,txt,typeId,time);
     }
 
-    public List<Article> getArticles(String title,String type,String col,String sort) {
+    public boolean deleteArticle(int aid) {
+        return articleDao.deleteArticle(aid);
+    }
+
+    public List<Article> getArticles(String title, String type, String col, String sort) {
         return articleDao.getArticles(title,type,col,sort);
     }
 
@@ -62,5 +66,15 @@ public class ArticleServiceImpl implements ArticleService {
 
     public boolean deleteCommentById(int id) {
         return articleDao.deleteCommentById(id);
+    }
+
+    public boolean insertComment(JSONObject comment) {
+        int uid = comment.getInt("userId");
+        int rid = comment.getInt("replyId");
+        int pid = comment.getInt("commentId");
+        int aid = comment.getInt("articleId");
+        String content = comment.getString("content");
+        String createTime = comment.getString("createTime");
+        return articleDao.insertComment(uid,rid,pid,aid,createTime,content);
     }
 }
