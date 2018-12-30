@@ -191,7 +191,7 @@
         content: ">";
     }
 </style>
-<body id="body" style="background-color: #ededed;padding-bottom: 150px;">
+<body id="body" style="background-color: #ededed;">
 
         <nav class="navbar navbar-expand-sm bg-dark navbar-dark col-auto" style="border-radius:0px;">
             <div class="container">
@@ -216,7 +216,7 @@
             </div><!-- /.container-fluid -->
         </nav>
 
-    <div class="card col-10 offset-1" style="margin-top: 2%">
+    <div class="card col-10 offset-1" style="margin-top: 2%;margin-bottom:2%">
 
         <div class="card-body " id="panel" style="min-height: 70vh" >
 
@@ -228,7 +228,7 @@
 
 
         <%--<div id="panel" class="container"  style="margin-left:21%;padding-top: 5vh;background-color: white;height: 75%;width:auto;border-radius: 7px"></div>--%>
-        <div class="card-footer bg-dark fixed-bottom" style="text-align: center;color: white;">
+        <div class="card-footer bg-dark " style="text-align: center;color: white;">
             <div class="" >
                 <ol class="breadcrumb text-dark bg-warning" id="breadcrumb" style="width: auto;height: 50px;margin:0px;text-align: center">
                     <label id="nowText">当前位置:&nbsp;</label>
