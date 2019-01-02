@@ -139,7 +139,7 @@
         })
         $(".deleteBtn").on("click",function () {
             var username = $(this).parents("tr").find(".usn").text();
-            if(confirm("是否删除"+username+"?(请谨慎操作)")){
+            if(confirm("是否删除"+username+"?(此用户下的所有评论也将会被删除，请谨慎操作！！！)")){
                 $.post("/deleteUser","name="+username,function (result) {
                     if(Boolean(result) == true){
                         getUserList(currentPage,$("#searchName").val());

@@ -145,7 +145,7 @@
 </style>
 <body>
 <form>
-    <div id="regPanel" class="card offset-3 col-6" style="padding: 0px;display: none">
+    <div id="regPanel" class="card offset-2 col-8" style="padding: 0px;display: none">
         <div class="card-header " style="text-align: center;letter-spacing: 5px;">
             <h3 class="card-title">用户注册</h3>
         </div>
@@ -161,7 +161,7 @@
                     <span class="input-group-text" ><i class="fa fa-lock"></i></span>
                 </div>
 
-                <input type="password" id="firstpwd" class="form-control"  placeholder="请输入密码(以字母开头，长度在6~18之间，只能包含字母、数字和下划线)">
+                <input type="password" id="firstpwd" class="form-control"  placeholder="请输入密码(字母开头，长度在6~18之间，只能包含字母、数字和下划线)">
             </div>
 
             <div class="input-group mb-4">
